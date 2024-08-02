@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body,
+#root,
+canvas {
+	margin: 0;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+}
+
+canvas {
+	cursor: none !important;
+}
+
+.mantine-Modal-content {
+	overflow: visible;
+}
+
+.mantine-Modal-root {
+
+	.mantine-Modal-inner,
+	header,
+	section {
+		background: transparent;
+		box-shadow: none;
+	}
+}
