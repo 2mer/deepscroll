@@ -17,7 +17,7 @@ canvas {
 }
 
 :not(canvas) {
-	cursor: url('./cursor.svg') 2 2, auto !important;
+	cursor: url('./assets/cursor_small.svg') 2 2, auto !important;
 }
 
 .mantine-Modal-content {
