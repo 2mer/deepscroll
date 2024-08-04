@@ -5,6 +5,7 @@ import {
 	Container,
 	DisplacementFilter,
 	Graphics,
+	mixHexColors,
 	Sprite,
 	Texture,
 } from 'pixi.js';
@@ -63,6 +64,10 @@ const availableArtifacts = [
 	},
 ];
 
+const allImages = [...availableUpgrades, ...availableArtifacts].map(
+	(e) => e.image
+);
+
 type Upgrade = {
 	persistent?: boolean;
 	type: string;
@@ -104,8 +109,43 @@ function App() {
 			wrongWayText.anchor.set(0.5);
 			wrongWayText.position.set(0, -5000);
 
+			const titleText = viewport.addChild(
+				new PixiText({
+					text: 'DOPAMINE\nDIVE',
+					style: { fontFamily: 'Bebas Neue', fontSize: 300 },
+				})
+			);
+			titleText.anchor.set(0.5);
+			titleText.position.set(0, -1000);
+			const ttBounds = titleText.getBounds();
+
+			for (let i = 0; i < 5; i++) {
+				const ScrollDownText = viewport.addChild(
+					new PixiText({
+						text: 'SCROLL ⬇',
+						style: { fontFamily: 'Bebas Neue', fontSize: 50 },
+						alpha: (5 - i) / 5,
+					})
+				);
+				ScrollDownText.anchor.set(1);
+				ScrollDownText.position.set(
+					ttBounds.right,
+					ttBounds.bottom - 225 + i * 80
+				);
+			}
+
+			const mulText = viewport.addChild(
+				new PixiText({
+					text: '',
+					style: { fontFamily: 'Bebas Neue', fontSize: 50 },
+					alpha: 0.6,
+				})
+			);
+			mulText.anchor.set(0);
+			mulText.position.set(ttBounds.left + 15, ttBounds.bottom);
+
 			const defaultState = {
-				depth: 0,
+				depth: -1000,
 				xp: 0,
 				level: 0,
 				maxXp: 50,
@@ -116,11 +156,12 @@ function App() {
 				paused: false,
 				iframes: 0,
 				persistent: {
-					// maxDepth: 1000 * 100,
-					maxDepth: 100 * 100,
+					maxDepth: 1000 * 100,
+					// maxDepth: 100 * 100,
 					mul: 1,
 					inAscension: false,
 				},
+				darkColor: 0,
 			};
 
 			const state = {
@@ -159,9 +200,10 @@ function App() {
 								</Text>
 
 								<div className='flex gap-10 justify-center'>
-									{availableUpgrades.map((upgrade) => {
+									{availableUpgrades.map((upgrade, index) => {
 										return (
 											<UpgradeCard
+												index={index}
 												upgrade={upgrade}
 												key={upgrade.id}
 												onClick={() => {
@@ -267,95 +309,112 @@ function App() {
 								</Text>
 
 								<div className='flex gap-10 justify-center'>
-									{availableArtifacts.map((upgrade) => {
-										return (
-											<UpgradeCard
-												upgrade={upgrade}
-												key={upgrade.id}
-												onClick={() => {
-													modals.close('depth');
+									{availableArtifacts.map(
+										(upgrade, index) => {
+											return (
+												<UpgradeCard
+													index={index}
+													upgrade={upgrade}
+													key={upgrade.id}
+													onClick={() => {
+														modals.close('depth');
 
-													state.persistent.maxDepth *= 2;
-													const oldState = {
-														...state,
-													};
+														state.persistent.maxDepth *= 2;
+														const oldState = {
+															...state,
+														};
 
-													Object.assign(
-														state,
-														defaultState
-													);
-													state.upgrades = [];
-													state.persistent =
-														oldState.persistent;
+														Object.assign(
+															state,
+															defaultState
+														);
+														state.upgrades = [];
+														state.persistent =
+															oldState.persistent;
 
-													upgradeChain
-														.slice()
-														.forEach((c) => {
-															if (!c.persistent) {
-																viewport.removeChild(
-																	c.container
-																);
-																upgradeChain.splice(
-																	upgradeChain.indexOf(
-																		c
-																	),
-																	1
-																);
-															}
-														});
+														upgradeChain
+															.slice()
+															.forEach((c) => {
+																if (
+																	!c.persistent
+																) {
+																	viewport.removeChild(
+																		c.container
+																	);
+																	upgradeChain.splice(
+																		upgradeChain.indexOf(
+																			c
+																		),
+																		1
+																	);
+																}
+															});
 
-													const upgradeContainer =
-														new Container();
-													const upgradeSprite =
-														new Sprite(
-															Texture.from(
-																upgrade.image
-															)
+														const upgradeContainer =
+															new Container();
+														const upgradeSprite =
+															new Sprite(
+																Texture.from(
+																	upgrade.image
+																)
+															);
+
+														upgradeSprite.anchor.set(
+															0.5
 														);
 
-													upgradeSprite.anchor.set(
-														0.5
-													);
+														upgradeSprite.scale.set(
+															0.4
+														);
+														upgradeSprite.position.set(
+															0
+														);
 
-													upgradeSprite.scale.set(
-														0.4
-													);
-													upgradeSprite.position.set(
-														0
-													);
+														upgradeContainer.addChild(
+															upgradeSprite
+														);
 
-													upgradeContainer.addChild(
-														upgradeSprite
-													);
+														upgradeChain.push({
+															...upgrade,
+															container:
+																upgradeContainer,
+														});
+														viewport.addChild(
+															upgradeContainer
+														);
 
-													upgradeChain.push({
-														...upgrade,
-														container:
-															upgradeContainer,
-													});
-													viewport.addChild(
-														upgradeContainer
-													);
+														upgrade?.apply(state);
 
-													upgrade?.apply(state);
+														state.iframes = 60 * 2;
+														state.paused = false;
+														state.persistent.inAscension =
+															false;
 
-													updateGaugePositions();
+														viewportWish.position.set(
+															0,
+															state.depth
+														);
 
-													updateUpgrades();
+														updateUpgrades();
 
-													state.iframes = 60 * 2;
-													state.paused = false;
-													state.persistent.inAscension =
-														false;
+														snapViewport();
 
-													viewportWish.position.set(
-														0
-													);
-													viewport.position.set(0);
-												}}
-											/>
-										);
-									})}
+														updateGaugePositions();
+
+														updateXpGauge();
+														ascensionGauge.progress = 0;
+
+														mulText.text =
+															'x' +
+															state.persistent
+																.mul;
+
+														updateBackground();
+													}}
+												/>
+											);
+										}
+									)}
 								</div>
 
 								<Text variant='gradient' fw={900} fz={'20px'}>
@@ -387,32 +446,39 @@ function App() {
 				updateXpGauge();
 			}
 
-			function removeXp(v: number) {
-				if (v < 1) return 0;
+			// function removeXp(v: number) {
+			// 	if (v < 1) return 0;
 
-				state.xp -= v;
-				if (state.xp < 0) {
-					state.xp = 0;
-					if (state.level > 0) {
-						state.maxXp /= 2;
+			// 	state.xp -= v;
+			// 	if (state.xp < 0) {
+			// 		state.xp = 0;
+			// 		if (state.level > 0) {
+			// 			state.maxXp /= 2;
 
-						const up = upgradeChain.pop()!;
+			// 			const up = upgradeChain.pop()!;
 
-						viewport.removeChild(up.container);
-						up.remove(state);
-					}
-				}
+			// 			viewport.removeChild(up.container);
+			// 			up.remove(state);
+			// 		}
+			// 	}
 
-				updateXpGauge();
+			// 	updateXpGauge();
 
-				return v;
+			// 	return v;
+			// }
+
+			const viewportWish = app.stage.addChild(new Container());
+			viewportWish.position.y = state.depth;
+
+			function snapViewport() {
+				viewport.moveCenter(
+					viewportWish.position.x,
+					viewportWish.position.y
+				);
 			}
 
-			const viewportWish = new Container();
-			viewport.center.set(
-				viewportWish.position.x,
-				viewportWish.position.y
-			);
+			snapViewport();
+
 			viewport.follow(viewportWish, {
 				speed: 1,
 				acceleration: 3,
@@ -432,10 +498,10 @@ function App() {
 			sprite.position.set(2, 2);
 			sprite.scale.set(0.18);
 
-			const xpGauge = new Gauge();
+			const xpGauge = new Gauge(state);
 			viewport.addChild(xpGauge.container);
 			xpGauge.draw();
-			const ascensionGauge = new Gauge();
+			const ascensionGauge = new Gauge(state);
 			viewport.addChild(ascensionGauge.container);
 			ascensionGauge.color = 0xc542f5;
 			ascensionGauge.radius = 8;
@@ -446,7 +512,9 @@ function App() {
 			// hpGauge.draw();
 			// viewport.addChild(hpGauge.container);
 
-			const depthBar = new DepthBar();
+			updateBackground();
+
+			const depthBar = new DepthBar(state);
 			depthBar.container.position.set(40, 25);
 			cursor.addChild(depthBar.container);
 
@@ -552,13 +620,26 @@ function App() {
 				checkHits();
 
 				checkDepth();
+
+				updateBackground();
 			});
+
+			function updateBackground() {
+				const ratio = Math.min(
+					1,
+					Math.max(0, state.depth / (10_000 * 100))
+				);
+
+				state.darkColor = ratio > 0.5 ? 0xfffc47 : 0;
+
+				const color = mixHexColors(0x5cd0fa, 0x00050d, ratio);
+
+				app.renderer.background.color = color;
+			}
 
 			app.stage.addChild(viewport);
 			viewport.addChild(pointGenerator.particles);
 			pointGenerator.particles.zIndex = -1;
-
-			app.stage.addChild(viewportWish);
 
 			app.stage.addChild(cursor);
 
@@ -618,7 +699,16 @@ function App() {
 		run();
 	}, []);
 
-	return <canvas ref={ref} />;
+	return (
+		<>
+			<canvas ref={ref} />
+			<div className='hidden'>
+				{allImages.map((i) => (
+					<img key={i} src={i} />
+				))}
+			</div>
+		</>
+	);
 }
 
 export default App;

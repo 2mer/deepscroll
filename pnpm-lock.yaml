@@ -4,6 +4,7 @@ specifiers:
   '@mantine/core': ^7.11.2
   '@mantine/hooks': ^7.11.2
   '@mantine/modals': ^7.11.2
+  '@types/howler': ^2.2.11
   '@types/react': ^18.3.3
   '@types/react-dom': ^18.3.0
   '@types/uuid': ^10.0.0
@@ -14,6 +15,7 @@ specifiers:
   eslint: ^8.57.0
   eslint-plugin-react-hooks: ^4.6.2
   eslint-plugin-react-refresh: ^0.4.7
+  howler: ^2.2.4
   immer: ^10.1.1
   pixi-dashed-line: ^1.4.2
   pixi-viewport: ^5.0.3
@@ -33,6 +35,7 @@ dependencies:
   '@mantine/core': 7.11.2_5kjktivz2ex4tgsbumch5agula
   '@mantine/hooks': 7.11.2_react@18.3.1
   '@mantine/modals': 7.11.2_hg3hegkbxrzt3jvjw2himmnqui
+  howler: 2.2.4
   immer: 10.1.1
   pixi-dashed-line: 1.4.2_pixi.js@8.2.6
   pixi-viewport: 5.0.3
@@ -43,6 +46,7 @@ dependencies:
   uuid: 10.0.0
 
 devDependencies:
+  '@types/howler': 2.2.11
   '@types/react': 18.3.3
   '@types/react-dom': 18.3.0
   '@types/uuid': 10.0.0
@@ -865,6 +869,10 @@ packages:
     resolution: {integrity: sha512-/kYRxGDLWzHOB7q+wtSUQlFrtcdUccpfy+X+9iMBpHK8QLLhx2wIPYuS5DYtR9Wa/YlZAbIovy7qVdB1Aq6Lyw==}
     dev: true
 
+  /@types/howler/2.2.11:
+    resolution: {integrity: sha512-7aBoUL6RbSIrqKnpEgfa1wSNUBK06mn08siP2QI0zYk7MXfEJAaORc4tohamQYqCqVESoDyRWSdQn2BOKWj2Qw==}
+    dev: true
+
   /@types/prop-types/15.7.12:
     resolution: {integrity: sha512-5zvhXYtRNRluoE/jAp4GVsSduVUzNWKkOZrCDBWYtE7biZywwdC2AcEzg+cSMLFRfVgeAFqpfNabiPjxFddV1Q==}
 
@@ -1682,6 +1690,10 @@ packages:
     dependencies:
       function-bind: 1.1.2
     dev: true
+
+  /howler/2.2.4:
+    resolution: {integrity: sha512-iARIBPgcQrwtEr+tALF+rapJ8qSc+Set2GJQl7xT1MQzWaVkFebdJhR3alVlSiUf5U7nAANKuj3aWpwerocD5w==}
+    dev: false
 
   /ignore/5.3.1:
     resolution: {integrity: sha512-5Fytz/IraMjqpwfd34ke28PTVMjZjJG2MPn5t7OE4eUCUNf8BAa7b5WUS9/Qvr6mwOQS7Mk6vdsMno5he+T8Xw==}

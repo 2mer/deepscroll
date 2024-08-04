@@ -16,6 +16,10 @@ canvas {
 	cursor: none !important;
 }
 
+:not(canvas) {
+	cursor: url('./cursor.svg') 2 2, auto !important;
+}
+
 .mantine-Modal-content {
 	overflow: visible;
 }
@@ -28,4 +32,10 @@ canvas {
 		background: transparent;
 		box-shadow: none;
 	}
+}
+
+.bebas-neue-regular {
+	font-family: "Bebas Neue", sans-serif;
+	font-weight: 400;
+	font-style: normal;
 }

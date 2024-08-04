@@ -16,7 +16,7 @@ export class DepthBar {
 	color = 0x0066FF;
 	depthScale = 1 / 100;
 
-	constructor() {
+	constructor(private state: any) {
 		this.text.anchor.set(0, 0.5);
 		this.text.position.set(this.width * 2, 0);
 	}
@@ -28,6 +28,7 @@ export class DepthBar {
 	set depth(value: number) {
 		this._depth = value * this.depthScale;
 		this.text.text = String(Math.round(this.depth)) + 'm';
+		this.text.style.fill = this.state.darkColor;
 		this.draw();
 	}
 
@@ -38,9 +39,13 @@ export class DepthBar {
 
 		this.graphics
 			.clear()
-			.setStrokeStyle({ width: this.strokeWidth + this.outlineWidth, color: 0, cap: 'round' })
-			.moveTo(hw, -hh)
+			.setStrokeStyle({ width: this.strokeWidth + this.outlineWidth, color: this.state.darkColor, cap: 'round' })
+			// .moveTo(hw, -hh)
+			// .lineTo(hw, hh)
+			.moveTo(this.width, -hh)
+			.lineTo(hw, -hh)
 			.lineTo(hw, hh)
+			.lineTo(this.width, hh)
 
 		const minWorld = (this.depth - (this.referenceSize / 2));
 		const maxWorld = (this.depth + (this.referenceSize / 2));
@@ -54,7 +59,7 @@ export class DepthBar {
 			const ratioWidth = Math.sin(ratio * Math.PI) * this.width;
 			const rhw = ratioWidth / 2
 
-			this.graphics.moveTo(hw - rhw, relativePos).lineTo(hw + rhw, relativePos);
+			this.graphics.moveTo(hw, relativePos).lineTo(hw + rhw, relativePos);
 		}
 
 		this.graphics.stroke();

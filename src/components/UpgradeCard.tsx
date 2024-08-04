@@ -1,12 +1,17 @@
 import { Card, Text } from '@mantine/core';
+import { useHotkeys } from '@mantine/hooks';
 
 function UpgradeCard({
 	upgrade,
 	onClick,
+	index,
 }: {
 	upgrade: any;
 	onClick?: () => void;
+	index: number;
 }) {
+	useHotkeys([[String(index + 1), () => onClick?.()]]);
+
 	return (
 		<Card
 			withBorder

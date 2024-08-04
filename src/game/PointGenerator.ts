@@ -1,8 +1,19 @@
 import { Assets, Container, Sprite, Texture } from "pixi.js";
 import SpatialHash from "../logic/SpatialHash";
 import { Point2D } from "../logic/Point2d";
-import { random, range } from "radash";
+import { random, throttle } from "radash";
 import pointImage from '../assets/point.png';
+import { Howl } from 'howler';
+
+const pickupSound = new Howl({
+	src: ['./coin.wav'],
+	volume: 0.1,
+	pool: 5,
+
+})
+
+const playSound = throttle({ interval: 1 }, () => pickupSound.play())
+// const playSound = () => pickupSound.play()
 
 export class PointGenerator {
 
@@ -46,9 +57,10 @@ export class PointGenerator {
 	loadChunk(chunkPos: Point2D) {
 		const key = this.spatialHash.gridPosToKey(chunkPos);
 		if (this.loaded.includes(key)) return key;
+		if (chunkPos.y < 0) return key;
 
 		const worldTopLeft = chunkPos.clone().mul(this.spatialHash.gridSize);
-		const density = Math.round(Math.max(0, chunkPos.y * 0.02));
+		const density = Math.round(Math.max(1, chunkPos.y * 0.02));
 
 		for (let i = 0; i < density;) {
 			const s = this.generate(random(worldTopLeft.x, worldTopLeft.x + this.spatialHash.gridSize), random(worldTopLeft.y, worldTopLeft.y + this.spatialHash.gridSize))
@@ -98,6 +110,9 @@ export class PointGenerator {
 		// this.particles.removeChild(s)
 
 		this.inEffect.push(s);
+
+
+		playSound();
 	}
 
 	updateInEffect(mousePosV: Point2D) {
